@@ -3,8 +3,38 @@ console.log("working");
 
 // Retrieve the earthquake GeoJSON data.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(data) {
-  // Creating a GeoJSON layer with the retrieved data.
-  L.geoJSON(data).addTo(map);
+  L.geoJSON(data, {
+
+  // Cirles
+  pointToLayer: function(feature, latlng) {
+                console.log(data);
+                return L.circleMarker(latlng);
+  },
+
+  // Style
+
+  style: function(feature) {
+    return {
+      opacity: 1,
+      fillOpacity: 1,
+      fillColor: "#ffae42",
+      color: "#000000",
+      radius: getRadius(feature.properties.mag),
+      stroke: true,
+      weight: 0.5
+    };
+
+  
+    function getRadius(magnitude) {
+      if(magnitude === 0) {
+        return 1;
+      }
+      return magnitude*4;
+    };
+
+  },
+
+  }).addTo(map);
 });
 
 // We create the tile layer that will be the background of our map.
@@ -37,6 +67,7 @@ let map = L.map('mapid', {
   zoom: 3,
   layers: [streets]
 })
+
 
 // Pass our map layers into our layers control and add the layers control to the map.
 L.control.layers(baseMaps).addTo(map);
